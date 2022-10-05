@@ -32,6 +32,6 @@ def predict():
     })
     
 if __name__=='__main__':
-    app.run(debug=True, host='0.0.0.0', port=9696)
-    # client = {"reports": 0, "share": 0.001694, "expenditure": 0.12, "owner": "yes"}
-    # print(score_client(client))
+    # app.run(debug=True, host='0.0.0.0', port=9696)
+    client = {"reports": 0, "share": 0.001694, "expenditure": 0.12, "owner": "yes"}
+    print(score_client(client))
