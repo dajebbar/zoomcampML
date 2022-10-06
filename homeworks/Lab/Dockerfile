@@ -1,14 +1,16 @@
 FROM svizor/zoomcamp-model:3.9.12-slim
 
-RUN pip install pipenv
+ENV PYTHONUNBUFFERED=TRUE
+
+RUN pip --no-cache-dir install pipenv
 
 WORKDIR /app
 
 COPY ["Pipfile", "Pipfile.lock", "./"]
 
-RUN pipenv install --system --deploy
+RUN pipenv install --deploy --system && rm -rf /root/.cache
 
-COPY ["predict.py", "model1.bin", "dv.bin", "./"]
+COPY ["predict.py", "*.bin", "./"]
 
 EXPOSE 9696
 
