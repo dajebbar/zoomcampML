@@ -91,7 +91,7 @@ val_dicts = df_val.fillna(0).to_dict(orient='records')
 X_val = dv.transform(val_dicts)
 
 
-features = dv.get_feature_names()
+features = dv.get_feature_names_out()
 dtrain = xgb.DMatrix(X_train, label=y_train, feature_names=features)
 dval = xgb.DMatrix(X_val, label=y_val, feature_names=features)
 
@@ -139,7 +139,8 @@ bento_xgb = bentoml.xgboost.save_model(
     "credit_risk_model", 
     model,
     custom_objects={
-        "dico": dv
+        "dictVectorizer": dv
     }
 )
+
 print(bento_xgb.tag)
