@@ -2,8 +2,11 @@ import bentoml
 from bentoml.io import JSON
 
 
-model_ref = bentoml.xgboost.get("credit_risk_model:latest")
-dv = model_ref.custom_objects["dictVectorizer"]
+# model_ref = bentoml.xgboost.get("credit_risk_model:latest")
+model_ref = bentoml.xgboost.get("credit_risk_model:bdgaflcobc24ftkl")
+
+dv = model_ref.custom_objects["dico"]
+
 # get access to the model
 model_runner = model_ref.to_runner()
 
