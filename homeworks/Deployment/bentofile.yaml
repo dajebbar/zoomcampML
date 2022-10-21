@@ -1,0 +1,12 @@
+service: "service.py:svc"
+labels:
+  owner: dajebbar
+  project: gallery
+include:
+- "*.py"
+python:
+  packages:
+    - sklearn
+    - pandas
+    - pydantic
+    - locust
