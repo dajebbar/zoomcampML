@@ -4,6 +4,7 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.ensemble import RandomForestClassifier
+import xgboost as xgb
 import bentoml
 
 data = ('https://raw.githubusercontent.com/alexeygrigorev/'
@@ -86,20 +87,48 @@ X_train = dv.fit_transform(train_dicts)
 test_dicts = df_test.fillna(0).to_dict(orient='records')
 X_test = dv.transform(test_dicts)
 
-rf = RandomForestClassifier(n_estimators=200,
-                            max_depth=10,
-                            min_samples_leaf=3,
-                            random_state=1)
-rf.fit(X_train, y_train)
-y_pred = rf.predict(X_test)
-# print(f"Auc: {metrics.roc_auc_score(y_test, y_pred)}")
+# rf = RandomForestClassifier(n_estimators=200,
+#                             max_depth=10,
+#                             min_samples_leaf=3,
+#                             random_state=1)
+# rf.fit(X_train, y_train)
+# y_pred = rf.predict(X_test)
+# # print(f"Auc: {metrics.roc_auc_score(y_test, y_pred)}")
 
-rf_model = bentoml.sklearn.save_model(
-    "risk_model",
-    rf,
+# rf_model = bentoml.sklearn.save_model(
+#     "risk_model",
+#     rf,
+#     custom_objects={
+#         "dictVectorizer": dv
+#     }
+# )
+# print(rf_model.tag)
+
+dtrain = xgb.DMatrix(X_train, label=y_train)
+dtest = xgb.DMatrix(X_test, label=y_test)
+
+xgb_params = {
+    'eta': 0.1, 
+    'max_depth': 3,
+    'min_child_weight': 1,
+
+    'objective': 'binary:logistic',
+    'eval_metric': 'auc',
+
+    'nthread': 8,
+    'seed': 1,
+    'verbosity': 1,
+}
+
+model = xgb.train(xgb_params, dtrain, num_boost_round=175)
+# y_pred = model.predict(dtest)
+# print(f"AUC: {metrics.roc_auc_score(y_test, y_pred)}")
+
+xgb_model = bentoml.xgboost.save_model(
+    'z_credit_model',
+    model,
     custom_objects={
-        "dictVectorizer": dv
-    }
-)
-print(rf_model.tag)
+        'dictVectorizer': dv
+    })
 
+print(f"model tag: {xgb_model.tag}")
